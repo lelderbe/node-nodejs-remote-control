@@ -4,6 +4,7 @@ export enum Commands {
 	RIGHT = 'mouse_right',
 	UP = 'mouse_up',
 	DOWN = 'mouse_down',
+	DRAW_CIRCLE = 'draw_circle',
 	DRAW_SQUARE = 'draw_square',
 	DRAW_RECTANGLE = 'draw_rectangle',
 }

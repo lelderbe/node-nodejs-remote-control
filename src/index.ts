@@ -1,6 +1,7 @@
 import WebSocket, { WebSocketServer } from 'ws';
+import { drawCircle } from './circle';
 import { Commands } from './constants';
-import { getMousePos, mouseMove, moveDown, moveLeft, moveRight, moveUp } from './mouse';
+import { getMousePos, moveDown, moveLeft, moveRight, moveUp } from './mouse';
 import { drawRectangle, drawSquare } from './square';
 
 const wss = new WebSocketServer({
@@ -38,6 +39,10 @@ wss.on('connection', (ws) => {
 		console.log('command:', command, 'args:', args);
 
 		switch (command) {
+			case Commands.DRAW_CIRCLE:
+				drawCircle(args);
+				ws.send(command);
+				break;
 			case Commands.DRAW_SQUARE:
 				drawSquare(args);
 				ws.send(command);

@@ -3,29 +3,20 @@ import { Commands } from './constants';
 import { getMousePos } from './mouse';
 
 export const drawRectangle = ([sizeX, sizeY, ...rest]: number[]) => {
-	robot.setMouseDelay(6);
+	robot.setMouseDelay(80);
 
 	let [x, y] = getMousePos();
 
-	robot.mouseToggle("down");
+	// click to get focus - need for Mac ?
+	// robot.mouseClick('left');
+	robot.mouseToggle('down');
 
-	for (let i = 0; i < sizeX; i++, x++) {
-		robot.moveMouse(x, y);
-	}
+	robot.moveMouse(x + sizeX, y);
+	robot.moveMouse(x + sizeX, y + sizeY);
+	robot.moveMouse(x, y + sizeY);
+	robot.moveMouse(x, y);
 
-	for (let i = 0; i < sizeY; i++, y++) {
-		robot.moveMouse(x, y);
-	}
-
-	for (let i = 0; i < sizeX; i++, x--) {
-		robot.moveMouse(x, y);
-	}
-
-	for (let i = 0; i < sizeY; i++, y--) {
-		robot.moveMouse(x, y);
-	}
-
-	robot.mouseToggle("up");
+	robot.mouseToggle('up');
 
 	return Commands.DRAW_RECTANGLE;
 }
