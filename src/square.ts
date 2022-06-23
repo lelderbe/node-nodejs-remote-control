@@ -1,8 +1,6 @@
-// Move the mouse across the screen as a sine wave.
-// var robot = require("robotjs");
-import * as robot from 'robotjs';
+import robot from 'robotjs';
 
-export const drawSquare = (size: number) => {
+export const drawSquare = ([size, ...rest]: number[]) => {
 	// Speed up the mouse.
 	robot.setMouseDelay(2);
 	

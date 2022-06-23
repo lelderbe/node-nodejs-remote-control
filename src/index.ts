@@ -1,4 +1,6 @@
 import WebSocket, { WebSocketServer } from 'ws';
+import { Commands } from './constants';
+import { getMousePos, mouseMove, moveDown, moveLeft, moveRight, moveUp } from './mouse';
 import { drawSquare } from './square';
 
 const wss = new WebSocketServer({
@@ -27,15 +29,39 @@ const wss = new WebSocketServer({
 wss.on('connection', (ws) => {
 	console.log('got connection');
 	ws.on('message', (data) => {
-		console.log('received:', data);
+		// console.log('received:', data);
 		const message = data.toString();
-		console.log(message);
-		const [cmd, ...rest] = message.split(' ');
-		console.log('cmd:', cmd, 'rest:', rest);
-		switch (cmd) {
-			case 'draw_square':
-				drawSquare(rest);
+		console.log('received:', message);
+		
+		const [command, ...rest] = message.split(' ');
+		const args = rest.map(Number);
+		console.log('command:', command, 'args:', args);
+
+		switch (command) {
+			case Commands.DRAW_SQUARE:
+				drawSquare(args);
 				break;
+			case Commands.MOUSE_POSITION:
+				const [x, y] = getMousePos();
+				ws.send(`mouse_position ${x},${y}`);
+				break;
+			case Commands.LEFT:
+				moveLeft(args);
+				ws.send(command);
+				break;
+			case Commands.RIGHT:
+				moveRight(args);
+				ws.send(command);
+				break;
+			case Commands.UP:
+				moveUp(args);
+				ws.send(command);
+				break;
+			case Commands.DOWN:
+				moveDown(args);
+				ws.send(command);
+				break;
+
 		}
 	});
 });
