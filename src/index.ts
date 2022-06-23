@@ -1,7 +1,7 @@
 import WebSocket, { WebSocketServer } from 'ws';
 import { Commands } from './constants';
 import { getMousePos, mouseMove, moveDown, moveLeft, moveRight, moveUp } from './mouse';
-import { drawSquare } from './square';
+import { drawRectangle, drawSquare } from './square';
 
 const wss = new WebSocketServer({
 	port: 8080,
@@ -40,6 +40,11 @@ wss.on('connection', (ws) => {
 		switch (command) {
 			case Commands.DRAW_SQUARE:
 				drawSquare(args);
+				ws.send(command);
+				break;
+			case Commands.DRAW_RECTANGLE:
+				drawRectangle(args);
+				ws.send(command);
 				break;
 			case Commands.MOUSE_POSITION:
 				const [x, y] = getMousePos();

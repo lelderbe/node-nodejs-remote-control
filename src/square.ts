@@ -1,16 +1,36 @@
 import robot from 'robotjs';
+import { Commands } from './constants';
+import { getMousePos } from './mouse';
 
-export const drawSquare = ([size, ...rest]: number[]) => {
-	// Speed up the mouse.
-	robot.setMouseDelay(2);
-	
-	var twoPI = Math.PI * 2.0;
-	var screenSize = robot.getScreenSize();
-	var height = (screenSize.height / 2) - 10;
-	var width = screenSize.width;
-	
-	for (var x = 0; x < width; x++) {
-		let y = height * Math.sin((twoPI * x) / width) + height;
+export const drawRectangle = ([sizeX, sizeY, ...rest]: number[]) => {
+	robot.setMouseDelay(6);
+
+	let [x, y] = getMousePos();
+
+	robot.mouseToggle("down");
+
+	for (let i = 0; i < sizeX; i++, x++) {
 		robot.moveMouse(x, y);
 	}
+
+	for (let i = 0; i < sizeY; i++, y++) {
+		robot.moveMouse(x, y);
+	}
+
+	for (let i = 0; i < sizeX; i++, x--) {
+		robot.moveMouse(x, y);
+	}
+
+	for (let i = 0; i < sizeY; i++, y--) {
+		robot.moveMouse(x, y);
+	}
+
+	robot.mouseToggle("up");
+
+	return Commands.DRAW_RECTANGLE;
+}
+
+export const drawSquare = ([size, ...rest]: number[]) => {
+	drawRectangle([size, size]);
+	return Commands.DRAW_SQUARE;
 }

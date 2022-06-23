@@ -2,12 +2,12 @@ import robot from 'robotjs';
 
 export const getMousePos = () => {
 	const mouse = robot.getMousePos();
-	console.log('mouse:', mouse);
 	return [mouse.x, mouse.y];
 }
 
 export const mouseMove = (dx: number, dy: number) => {
-	const [x, y] = getMousePos();
+	// const [x, y] = getMousePos();
+	const { x, y } = robot.getMousePos();
 	robot.moveMouse(x + dx, y + dy);
 }
 
