@@ -1,6 +1,7 @@
 import robot from 'robotjs';
+import { Commands } from './constants';
 
-export const drawCircle = ([radius, ...rest]: number[]) => {
+export const drawCircle = async ([radius, ...rest]: number[]) => {
 	robot.setMouseDelay(6);
 
 	const { x, y } = robot.getMousePos();
@@ -17,4 +18,6 @@ export const drawCircle = ([radius, ...rest]: number[]) => {
 	}
 
 	robot.mouseToggle('up');
+
+	return Commands.DRAW_CIRCLE;
 }

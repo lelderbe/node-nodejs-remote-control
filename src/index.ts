@@ -1,81 +1,66 @@
-import WebSocket, { WebSocketServer } from 'ws';
+import 'dotenv/config';
+import WebSocket, { createWebSocketStream, WebSocketServer } from 'ws';
 import { drawCircle } from './circle';
-import { Commands } from './constants';
+import { Commands, GREEN, RESET } from './constants';
 import { getMousePos, moveDown, moveLeft, moveRight, moveUp } from './mouse';
 import { drawRectangle, drawSquare } from './square';
 
+const PORT = +process.env.PORT || 8080;
+
+const commands = {
+	[Commands.MOUSE_POSITION]: getMousePos,
+	[Commands.LEFT]: moveLeft,
+	[Commands.RIGHT]: moveRight,
+	[Commands.UP]: moveUp,
+	[Commands.DOWN]: moveDown,
+	[Commands.DRAW_CIRCLE]: drawCircle,
+	[Commands.DRAW_SQUARE]: drawSquare,
+	[Commands.DRAW_RECTANGLE]: drawRectangle,
+}
+
 const wss = new WebSocketServer({
-	port: 8080,
-	perMessageDeflate: {
-		zlibDeflateOptions: {
-			// See zlib defaults.
-			chunkSize: 1024,
-			memLevel: 7,
-			level: 3
-		},
-		zlibInflateOptions: {
-			chunkSize: 10 * 1024
-		},
-		// Other options settable:
-		clientNoContextTakeover: true, // Defaults to negotiated value.
-		serverNoContextTakeover: true, // Defaults to negotiated value.
-		serverMaxWindowBits: 10, // Defaults to negotiated value.
-		// Below options specified as default values.
-		concurrencyLimit: 10, // Limits zlib concurrency for perf.
-		threshold: 1024 // Size (in bytes) below which messages
-		// should not be compressed if context takeover is disabled.
-	}
+	port: PORT,
 });
 
-wss.on('connection', (ws) => {
-	console.log('got connection');
-	ws.on('message', (data) => {
-		// console.log('received:', data);
-		const message = data.toString();
+console.log(GREEN + `Web Socket Server started on port ${wss.options.port}`, RESET);
+
+wss.on('connection', (ws, req) => {
+	console.log(GREEN + 'New connection from address:', req.socket.remoteAddress, 'port:', req.socket.remotePort, RESET);
+
+	const duplex = createWebSocketStream(ws, { encoding: 'utf8', decodeStrings: false });
+
+	duplex.on('data', async (message) => {
 		console.log('received:', message);
 		
 		const [command, ...rest] = message.split(' ');
 		const args = rest.map(Number);
-		console.log('command:', command, 'args:', args);
 
-		switch (command) {
-			case Commands.DRAW_CIRCLE:
-				drawCircle(args);
-				ws.send(command);
-				break;
-			case Commands.DRAW_SQUARE:
-				drawSquare(args);
-				ws.send(command);
-				break;
-			case Commands.DRAW_RECTANGLE:
-				drawRectangle(args);
-				ws.send(command);
-				break;
-			case Commands.MOUSE_POSITION:
-				const [x, y] = getMousePos();
-				ws.send(`mouse_position ${x},${y}`);
-				break;
-			case Commands.LEFT:
-				moveLeft(args);
-				ws.send(command);
-				break;
-			case Commands.RIGHT:
-				moveRight(args);
-				ws.send(command);
-				break;
-			case Commands.UP:
-				moveUp(args);
-				ws.send(command);
-				break;
-			case Commands.DOWN:
-				moveDown(args);
-				ws.send(command);
-				break;
-
+		if (command in commands) {
+			try {
+				const result = await commands[command](args);
+				console.log('success:', result);
+				duplex.write(result);
+			} catch (err: any) {
+				console.log('failed:', command, ', got error:', err.message);
+			}
 		}
+	});
+
+	ws.on('close', () => {
+		console.log(GREEN + 'Connection closed', RESET);
 	});
 });
 
 wss.on('close', () => {
-	console.log('connection closed');
+	console.log(GREEN + 'Server shutdown', RESET);
+});
+
+process.on('SIGINT', () => {
+	wss.clients.forEach((client) => {
+		if (client.readyState === WebSocket.OPEN) {
+			client.close();
+		}
+	});
+
+	wss.close();
 });

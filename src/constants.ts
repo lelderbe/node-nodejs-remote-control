@@ -8,3 +8,6 @@ export enum Commands {
 	DRAW_SQUARE = 'draw_square',
 	DRAW_RECTANGLE = 'draw_rectangle',
 }
+
+export const GREEN = '\x1B[0;92m';
+export const RESET = '\x1B[0m';

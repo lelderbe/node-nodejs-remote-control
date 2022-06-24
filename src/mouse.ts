@@ -1,28 +1,32 @@
 import robot from 'robotjs';
+import { Commands } from './constants';
 
-export const getMousePos = () => {
+export const getMousePos = async () => {
 	const mouse = robot.getMousePos();
-	return [mouse.x, mouse.y];
+	return `${Commands.MOUSE_POSITION} ${mouse.x},${mouse.y}`;
 }
 
-export const mouseMove = (dx: number, dy: number) => {
-	// const [x, y] = getMousePos();
+const mouseMove = async (dx: number, dy: number) => {
 	const { x, y } = robot.getMousePos();
 	robot.moveMouse(x + dx, y + dy);
 }
 
-export const moveLeft = ([dx, ...rest]: number[]) => {
-	mouseMove(-dx, 0);
+export const moveLeft = async ([dx, ...rest]: number[]) => {
+	await mouseMove(-dx, 0);
+	return Commands.LEFT;
 }
 
-export const moveRight = ([dx, ...rest]: number[]) => {
-	mouseMove(dx, 0);
+export const moveRight = async ([dx, ...rest]: number[]) => {
+	await mouseMove(dx, 0);
+	return Commands.RIGHT;
 }
 
-export const moveUp = ([dy, ...rest]: number[]) => {
-	mouseMove(0, -dy);
+export const moveUp = async ([dy, ...rest]: number[]) => {
+	await mouseMove(0, -dy);
+	return Commands.UP;
 }
 
-export const moveDown = ([dy, ...rest]: number[]) => {
-	mouseMove(0, dy);
+export const moveDown = async ([dy, ...rest]: number[]) => {
+	await mouseMove(0, dy);
+	return Commands.DOWN;
 }
