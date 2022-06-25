@@ -7,6 +7,7 @@ export enum Commands {
 	DRAW_CIRCLE = 'draw_circle',
 	DRAW_SQUARE = 'draw_square',
 	DRAW_RECTANGLE = 'draw_rectangle',
+	PRNT_SCRN = 'prnt_scrn',
 }
 
 export const GREEN = '\x1B[0;92m';

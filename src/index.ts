@@ -3,6 +3,7 @@ import WebSocket, { createWebSocketStream, WebSocketServer } from 'ws';
 import { drawCircle } from './circle';
 import { Commands, GREEN, RESET } from './constants';
 import { getMousePos, moveDown, moveLeft, moveRight, moveUp } from './mouse';
+import { screenshot } from './screenshot';
 import { drawRectangle, drawSquare } from './square';
 
 const PORT = +process.env.PORT || 8080;
@@ -16,6 +17,7 @@ const commands = {
 	[Commands.DRAW_CIRCLE]: drawCircle,
 	[Commands.DRAW_SQUARE]: drawSquare,
 	[Commands.DRAW_RECTANGLE]: drawRectangle,
+	[Commands.PRNT_SCRN]: screenshot,
 }
 
 const wss = new WebSocketServer({
@@ -39,9 +41,10 @@ wss.on('connection', (ws, req) => {
 			try {
 				const result = await commands[command](args);
 				console.log('success:', result);
-				duplex.write(result);
+				// subject requirement, useless
+				duplex.write(result + '\0');
 			} catch (err: any) {
-				console.log('failed:', command, ', got error:', err.message);
+				console.error('failed:', command, ', got error:', err.message);
 			}
 		}
 	});
