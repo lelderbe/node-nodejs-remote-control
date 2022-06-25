@@ -8,7 +8,7 @@ export const screenshot = async () => {
 	const raw = robot.screen.capture(x - size / 2, y - size / 2, size, size);
 	const image = new Jimp({ data: raw.image, width: size, height: size });
 
-	// brg -> rgb fix
+	// bgr -> rgb fix
 	for (let i = 0; i < raw.image.length; i += 4) {
 		[image.bitmap.data[i], image.bitmap.data[i + 2]] =
 			[image.bitmap.data[i + 2], image.bitmap.data[i]];
