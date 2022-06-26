@@ -18,7 +18,7 @@ const commands = {
 	[Commands.DRAW_SQUARE]: drawSquare,
 	[Commands.DRAW_RECTANGLE]: drawRectangle,
 	[Commands.PRNT_SCRN]: screenshot,
-}
+};
 
 const wss = new WebSocketServer({
 	port: PORT,
@@ -27,13 +27,19 @@ const wss = new WebSocketServer({
 console.log(GREEN + `Web Socket Server started on port ${wss.options.port}`, RESET);
 
 wss.on('connection', (ws, req) => {
-	console.log(GREEN + 'New connection from address:', req.socket.remoteAddress, 'port:', req.socket.remotePort, RESET);
+	console.log(
+		GREEN + 'New connection from address:',
+		req.socket.remoteAddress,
+		'port:',
+		req.socket.remotePort,
+		RESET,
+	);
 
 	const duplex = createWebSocketStream(ws, { encoding: 'utf8', decodeStrings: false });
 
 	duplex.on('data', async (message) => {
 		console.log('received:', message);
-		
+
 		const [command, ...rest] = message.split(' ');
 		const args = rest.map(Number);
 
